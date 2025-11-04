@@ -1,13 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router"
+import Welcome from "./-components/Welcome"
 
-export const Route = createFileRoute("/about")({
+export const Route = createFileRoute("/_auth/")({
   component: Home,
 })
 
 function Home() {
   return (
-    <div className="p-2">
-      <h3>About</h3>
+    <div>
+      <Welcome />
     </div>
   )
 }
