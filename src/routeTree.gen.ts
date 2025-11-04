@@ -11,7 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
-import { Route as AuthIndexRouteRouteImport } from './routes/_auth/index/route'
+import { Route as AuthIndexRouteImport } from './routes/_auth/index'
+import { Route as AuthForumsRouteRouteImport } from './routes/_auth/forums/route'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -22,30 +23,40 @@ const AuthRouteRoute = AuthRouteRouteImport.update({
   id: '/_auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthIndexRouteRoute = AuthIndexRouteRouteImport.update({
+const AuthIndexRoute = AuthIndexRouteImport.update({
   id: '/',
-  path: '',
+  path: '/',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthForumsRouteRoute = AuthForumsRouteRouteImport.update({
+  id: '/forums',
+  path: '/forums',
   getParentRoute: () => AuthRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
+  '/forums': typeof AuthForumsRouteRoute
+  '/': typeof AuthIndexRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
+  '/forums': typeof AuthForumsRouteRoute
+  '/': typeof AuthIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_auth': typeof AuthRouteRouteWithChildren
   '/login': typeof LoginRoute
-  '/_auth/': typeof AuthIndexRouteRoute
+  '/_auth/forums': typeof AuthForumsRouteRoute
+  '/_auth/': typeof AuthIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/login'
+  fullPaths: '/login' | '/forums' | '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/login'
-  id: '__root__' | '/_auth' | '/login' | '/_auth/'
+  to: '/login' | '/forums' | '/'
+  id: '__root__' | '/_auth' | '/login' | '/_auth/forums' | '/_auth/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -71,20 +82,29 @@ declare module '@tanstack/react-router' {
     }
     '/_auth/': {
       id: '/_auth/'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof AuthIndexRouteRouteImport
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof AuthIndexRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/_auth/forums': {
+      id: '/_auth/forums'
+      path: '/forums'
+      fullPath: '/forums'
+      preLoaderRoute: typeof AuthForumsRouteRouteImport
       parentRoute: typeof AuthRouteRoute
     }
   }
 }
 
 interface AuthRouteRouteChildren {
-  AuthIndexRouteRoute: typeof AuthIndexRouteRoute
+  AuthForumsRouteRoute: typeof AuthForumsRouteRoute
+  AuthIndexRoute: typeof AuthIndexRoute
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
-  AuthIndexRouteRoute: AuthIndexRouteRoute,
+  AuthForumsRouteRoute: AuthForumsRouteRoute,
+  AuthIndexRoute: AuthIndexRoute,
 }
 
 const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
